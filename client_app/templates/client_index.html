@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 30px;
+        font-family: system-ui, sans-serif;
+        background: #fafafa;
+        color: #222;
+    }
+</style>
+<body>
+    <h1>{{ request.tenant }} Employee </h1>
+    <ul>
+        {% for employee in employees %}
+        <li> {{ employee.name }} </li>
+        {% endfor %}
+    </ul>
+
+    <form method="POST" action="/create_employee">
+        {% csrf_token %}
+        <input type="text", name="name", placeholder="Add New Employee" />
+        <button>Submit</button>
+    </form>
+</body>
+</html>
