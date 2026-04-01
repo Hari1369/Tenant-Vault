@@ -48,7 +48,13 @@ SHARED_APPS = [
     'app'
 ]
 TENANT_APPS = ["client_app"]
-INSTALLED_APPS = SHARED_APPS + [app for app in TENANT_APPS if app not in SHARED_APPS]
+result = []
+
+for app in TENANT_APPS:
+    if app not in SHARED_APPS:
+        result.append(app)
+
+INSTALLED_APPS = SHARED_APPS + result
 
 MIDDLEWARE = [
     'django_tenants.middleware.main.TenantMainMiddleware',
