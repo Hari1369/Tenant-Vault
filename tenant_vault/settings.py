@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-9ewrn4=nhrwwa&r7+e=1jn!q3)&dk)p^=n)8&g!sa9ks6e(p#s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.localhost','127.0.0.1']
 
 
 # Application definition
@@ -48,13 +48,7 @@ SHARED_APPS = [
     'app'
 ]
 TENANT_APPS = ["client_app"]
-result = []
-
-for app in TENANT_APPS:
-    if app not in SHARED_APPS:
-        result.append(app)
-
-INSTALLED_APPS = SHARED_APPS + result
+INSTALLED_APPS = SHARED_APPS + [app for app in TENANT_APPS if app not in SHARED_APPS]
 
 MIDDLEWARE = [
     'django_tenants.middleware.main.TenantMainMiddleware',
