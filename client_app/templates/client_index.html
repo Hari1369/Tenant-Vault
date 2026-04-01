@@ -15,7 +15,7 @@
     }
 </style>
 <body>
-    <h1>{{ request.tenant }} Employee </h1>
+    <h1>{{ request.tenant|capfirst }} Domain Employee</h1>
     <ul>
         {% for employee in employees %}
         <li> {{ employee.name }} </li>
