@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-9ewrn4=nhrwwa&r7+e=1jn!q3)&dk)p^=n)8&g!sa9ks6e(p#s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['.localhost','127.0.0.1']
+ALLOWED_HOSTS = ['snitch.localhost', 'puma.localhost', 'nike.localhost', 'quantumd.localhost','.localhost','127.0.0.1']
 
 
 # Application definition
