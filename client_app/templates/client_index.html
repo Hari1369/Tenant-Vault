@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Document</title>
+    <title>Domain</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <style>
@@ -15,17 +15,43 @@
     }
 </style>
 <body>
-    <h1>{{ request.tenant|capfirst }} Domain Employee</h1>
-    <ul>
-        {% for employee in employees %}
-        <li> {{ employee.name }} </li>
+    <h1>{{ request.tenant|capfirst }} Domain </h1>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <script>
+                alert("{{ message }}");
+            </script>
         {% endfor %}
-    </ul>
+    {% endif %}
 
-    <form method="POST" action="/create_employee">
+    <form method="POST" action="{% url 'create_employee' %}">
         {% csrf_token %}
-        <input type="text", name="name", placeholder="Add New Employee" />
-        <button>Submit</button>
+        <p>{{ form.name.label_tag }} {{ form.name }}</p>
+        <p>{{ form.password.label_tag }} {{ form.password }}</p>
+        <button type="submit">Submit</button>
     </form>
+
+    <br><br><br>
+    {% if employees %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th align="center" valign="middle">Sr No</th>
+                <th hidden>ID</th>
+                <th align="center" valign="middle">Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in employees %}
+            <tr align="center" valign="middle">
+                <td>{{ forloop.counter }}</td>
+                <td hidden>{{ employee.id }}</td>
+                <td>{{ employee.name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
 </body>
 </html>
