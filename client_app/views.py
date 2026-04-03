@@ -31,7 +31,6 @@ def create_employee(request):
             employee.set_password(password)
             employee.save()
             
-            # ✅ success message
             messages.success(request, "Employee added to system successfully!")
 
             return redirect("client_index")

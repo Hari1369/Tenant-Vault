@@ -6,20 +6,20 @@ from .models import SuperAdmin
 def index(request):
     return HttpResponse("<h1>Public index</h1>")
 
-def log_view(request):
-    if request.method == "POST":
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
+# def log_view(request):
+#     if request.method == "POST":
+#         username = request.POST.get('username')
+#         password = request.POST.get('password')
+#         user = authenticate(request, username=username, password=password)
 
-        if user:
-            login(request, user)
-            profile = user.SuperAdmin
-            if profile.role == 'super_admin':
-                return redirect('admin_dashboard')
-            else:
-                return redirect('dashboard')
-    else:
+#         if user:
+#             login(request, user)
+#             profile = user.SuperAdmin
+#             if profile.role == 'super_admin':
+#                 return redirect('admin_dashboard')
+#             else:
+#                 return redirect('dashboard')
+#     else:
 
 
 # # ====================================================> TESTING
