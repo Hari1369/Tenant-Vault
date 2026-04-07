@@ -137,4 +137,5 @@ STATIC_URL = 'static/'
 
 TENANT_MODEL = "app.Client"
 TENANT_DOMAIN_MODEL = "app.Domain"
-PUBLIC_SCHEMA_URLCONF = "app.urls"
+# PUBLIC_SCHEMA_URLCONF = "app.urls"
+PUBLIC_SCHEMA_URLCONF = "tenant_vault.public_urls"
