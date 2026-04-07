@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Login</title>
+</head>
+<body>
+<h2>Employee Login</h2>
+
+{% if error %}
+    <p>{{ error }}</p>
+{% endif %}
+
+<form method="POST" action="{% url 'tenant_login' %}">
+    {% csrf_token %}
+
+    <div>
+        <label>Employee Username : </label>
+        <input type="text" name="employee_user" placeholder="Employee Username" required>
+    </div>
+
+    <br>
+
+    <div>
+        <label>Employee Password : </label>
+        <input type="password" name="employee_password" placeholder="Enter Password" required>
+    </div>
+
+    <br>
+
+    <button type="submit">Login</button>
+</form>
+
+</body>
+</html>
