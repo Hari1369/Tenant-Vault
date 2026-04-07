@@ -24,6 +24,7 @@ class Employee(models.Model):
 
 class TenantUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    employee = models.OneToOneField(Employee, on_delete=models.CASCADE)
     tenant = models.ForeignKey(Client, on_delete=models.CASCADE)
 
     def __str__(self):
