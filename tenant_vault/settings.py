@@ -99,6 +99,7 @@ DATABASE_ROUTERS = [
     'django_tenants.routers.TenantSyncRouter',
 ]
 
+
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
@@ -138,3 +139,22 @@ STATIC_URL = 'static/'
 TENANT_MODEL = "app.Client"
 TENANT_DOMAIN_MODEL = "app.Domain"
 PUBLIC_SCHEMA_URLCONF = "app.urls"
+
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = 'hiranmaymondal369@gmail.com'
+EMAIL_HOST_PASSWORD = 'fsuylorxgmauusow'
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-otp-cache"
+    }
+}

@@ -31,6 +31,14 @@ class EmployeeForm(forms.Form):
             "placeholder": "Enter email address"
         })
     )
+    otp = forms.CharField(
+        max_length=6,
+        required=False,
+        label="Enter OTP",
+        widget=forms.TextInput(attrs={
+            "placeholder": "Enter 6-digit OTP"
+        })
+    )
 
 class Tenant_login(forms.Form):
     employee_user = forms.CharField(

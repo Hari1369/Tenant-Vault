@@ -11,6 +11,8 @@ class Employee(models.Model):
     email_id = models.EmailField(unique=True)
     mobile_no = models.CharField(max_length=15)
     
+    is_verified = models.BooleanField(default=False)
+    
     client = models.ForeignKey(
         'app.Client',
         on_delete=models.CASCADE,

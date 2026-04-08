@@ -31,6 +31,13 @@
         <p>{{ form.password.label_tag }} {{ form.password }}</p>
         <p>{{ form.email_id.label_tag }} {{ form.email_id }}</p>
         <p>{{ form.mobile_no.label_tag }} {{ form.mobile_no }}</p>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div>
+                {{ form.otp.label_tag }} {{ form.otp }}
+            </div>
+            <button type="submit">Send OTP</button>
+        </div>
+        <br>
         <button type="submit">Submit</button>
     </form>
 
