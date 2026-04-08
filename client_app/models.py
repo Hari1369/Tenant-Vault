@@ -7,6 +7,10 @@ from django.contrib.auth.hashers import make_password, check_password
 class Employee(models.Model):
     name = models.CharField(max_length=250)
     password = models.CharField(max_length=128)
+    
+    email_id = models.EmailField(unique=True)
+    mobile_no = models.CharField(max_length=15)
+    
     client = models.ForeignKey(
         'app.Client',
         on_delete=models.CASCADE,

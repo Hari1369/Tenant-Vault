@@ -62,8 +62,13 @@ def create_employee(request):
             name = form.cleaned_data["name"]
             password = form.cleaned_data["password"]
             
+            email_id = form.cleaned_data["email_id"]
+            phone_number = form.cleaned_data["phone_number"]
+            
             employee = Employee(
                 name=name,
+                email_id=email_id,
+                phone_number=phone_number,
                 client=request.tenant
             )
             employee.set_password(password)

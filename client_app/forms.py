@@ -16,6 +16,21 @@ class EmployeeForm(forms.Form):
             "placeholder": "Enter Password"
         })
     )
+    
+    mobile_no = forms.CharField(
+        max_length=15,
+        label="Mobile Number",
+        widget=forms.TextInput(attrs={
+            "placeholder": "Enter mobile number"
+        })
+    )
+    
+    email_id = forms.EmailField(
+        label="Email",
+        widget=forms.EmailInput(attrs={
+            "placeholder": "Enter email address"
+        })
+    )
 
 class Tenant_login(forms.Form):
     employee_user = forms.CharField(

@@ -29,6 +29,8 @@
         {% csrf_token %}
         <p>{{ form.name.label_tag }} {{ form.name }}</p>
         <p>{{ form.password.label_tag }} {{ form.password }}</p>
+        <p>{{ form.email_id.label_tag }} {{ form.email_id }}</p>
+        <p>{{ form.mobile_no.label_tag }} {{ form.mobile_no }}</p>
         <button type="submit">Submit</button>
     </form>
 
@@ -47,7 +49,7 @@
             <tr align="center" valign="middle">
                 <td>{{ forloop.counter }}</td>
                 <td hidden>{{ employee.id }}</td>
-                <td>{{ employee.name }}</td>
+                <td>{{ employee.name|capfirst }}</td>
             </tr>
             {% endfor %}
         </tbody>
