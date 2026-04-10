@@ -43,15 +43,15 @@ class TenantUser(models.Model):
         
 
 class EmployeeSession(models.Model):
-    tenant          = models.ForeignKey(
+    tenant = models.ForeignKey(
         'app.Client',
-        on_delete=models.CASCADE,
-        related_name='employee_sessions'
+        on_delete =models.CASCADE,
+        related_name ='employee_sessions'
     )
-    employee        = models.ForeignKey(
+    employee = models.ForeignKey(
         Employee,
-        on_delete=models.CASCADE,
-        related_name='sessions'
+        on_delete = models.CASCADE,
+        related_name = 'sessions'
     )
     logged_in_time  = models.DateTimeField(default=timezone.now)
     logged_out_time = models.DateTimeField(null=True, blank=True)
