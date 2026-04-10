@@ -103,7 +103,7 @@ def tenant_log_out(request):
         except EmployeeSession.DoesNotExist:
             pass
 
-    request.session.flush()                     # destroy Django session
+    request.session.flush()
     return redirect('tenant_login')
 
 
@@ -123,7 +123,7 @@ def index(request):
     })
 
 
-@login_required_custom
+# @login_required_custom
 def create_employee(request):
     if request.method == "POST":
         form = EmployeeForm(request.POST)
