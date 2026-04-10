@@ -1,11 +1,17 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 from client_app.models import Employee, EmployeeSession
 from .forms import EmployeeForm, Tenant_login
 from django.contrib import messages
 from .utils import generate_otp, send_otp_email
 from functools import wraps
 
+import time
+
+
+OTP_EXPIRY_SECONDS = 75
 
 # ─────────────────────────────────────────
 # Helper: get real IP (handles proxies too)
@@ -15,7 +21,6 @@ def get_client_ip(request):
     if x_forwarded_for:
         return x_forwarded_for.split(',')[0].strip()
     return request.META.get('REMOTE_ADDR')
-
 
 # ─────────────────────────────────────────
 # Decorators
@@ -123,64 +128,147 @@ def index(request):
     })
 
 
-# @login_required_custom
+@require_POST
+def send_otp(request):
+    email_id = request.POST.get("email_id", "").strip()
+    name     = request.POST.get("name", "").strip()
+    password = request.POST.get("password", "").strip()
+    mobile   = request.POST.get("mobile_no", "").strip()
+
+    if not all([name, password, email_id, mobile]):
+        return JsonResponse({"success": False, "error": "Please fill all fields before sending OTP."})
+
+    # ── Check email uniqueness ────────────────────────────────────────
+    if Employee.objects.filter(email_id=email_id).exists():
+        return JsonResponse({"success": False, "error": "This email is already registered."})
+
+    # ── Check phone uniqueness ────────────────────────────────────────
+    if Employee.objects.filter(mobile_no=mobile).exists():
+        return JsonResponse({"success": False, "error": "This phone number is already registered."})
+
+    otp = generate_otp()
+    request.session["otp"]           = otp
+    request.session["otp_timestamp"] = time.time()
+    request.session["user_data"]     = {
+        "name":      name,
+        "password":  password,
+        "email_id":  email_id,
+        "mobile_no": mobile,
+    }
+
+    send_otp_email(email_id, otp)
+    return JsonResponse({"success": True, "message": "OTP sent to your email.", "expiry": OTP_EXPIRY_SECONDS})
+
 def create_employee(request):
     if request.method == "POST":
         form = EmployeeForm(request.POST)
 
         if form.is_valid():
-            name         = form.cleaned_data["name"]
-            password     = form.cleaned_data["password"]
-            email_id     = form.cleaned_data["email_id"]
-            phone_number = form.cleaned_data["mobile_no"]
-            otp_entered  = form.cleaned_data["otp"]
+            otp_entered = form.cleaned_data["otp"]
 
             if not otp_entered:
-                otp = generate_otp()
-                request.session['otp'] = otp
-                request.session['user_data'] = {
-                    "name": name,
-                    "password": password,
-                    "email_id": email_id,
-                    "mobile_no": phone_number
-                }
-                send_otp_email(email_id, otp)
-                messages.info(request, "OTP sent to your email")
-                return render(request, "client_index.html", {"form": form})
+                form.add_error("otp", "Please enter the OTP sent to your email.")
+                employees = Employee.objects.all()
+                return render(request, "client_index.html", {"form": form, "employees": employees})
 
-            session_otp = request.session.get("otp")
+            session_otp       = request.session.get("otp")
+            otp_timestamp     = request.session.get("otp_timestamp")
 
-            if otp_entered == session_otp:
-                data = request.session.get("user_data")
+            # ── Expiry check ──────────────────────────────────────────────
+            if not session_otp or not otp_timestamp:
+                messages.error(request, "No OTP found. Please request a new one.")
+            elif time.time() - otp_timestamp > OTP_EXPIRY_SECONDS:
+                # Clean up expired OTP
+                request.session.pop("otp", None)
+                request.session.pop("otp_timestamp", None)
+                request.session.pop("user_data", None)
+                messages.error(request, "OTP has expired. Please request a new one.")
+            elif otp_entered == session_otp:
+                data = request.session.get("user_data", {})
 
                 employee = Employee(
                     name      = data["name"],
                     email_id  = data["email_id"],
                     mobile_no = data["mobile_no"],
-                    client    = request.tenant
+                    client    = request.tenant,
                 )
                 employee.set_password(data["password"])
                 employee.save()
 
-                # Only flush OTP-related keys, not the full login session
-                request.session.pop('otp', None)
-                request.session.pop('user_data', None)
+                request.session.pop("otp", None)
+                request.session.pop("otp_timestamp", None)
+                request.session.pop("user_data", None)
 
                 messages.success(request, "Employee added successfully!")
                 return redirect("client_index")
-
             else:
-                messages.error(request, "Invalid OTP")
+                messages.error(request, "Invalid OTP. Please try again.")
 
     else:
         form = EmployeeForm()
 
     employees = Employee.objects.all()
-    return render(request, "client_index.html", {
-        "form": form,
-        "employees": employees
-    })
-    
+    return render(request, "client_index.html", {"form": form, "employees": employees})
+
+
+#=====================================================================================================> UPDATED CODE
+# def create_employee(request):
+#     if request.method == "POST":
+#         form = EmployeeForm(request.POST)
+
+#         if form.is_valid():
+#             name         = form.cleaned_data["name"]
+#             password     = form.cleaned_data["password"]
+#             email_id     = form.cleaned_data["email_id"]
+#             phone_number = form.cleaned_data["mobile_no"]
+#             otp_entered  = form.cleaned_data["otp"]
+
+#             if not otp_entered:
+#                 otp = generate_otp()
+#                 request.session['otp'] = otp
+#                 request.session['user_data'] = {
+#                     "name": name,
+#                     "password": password,
+#                     "email_id": email_id,
+#                     "mobile_no": phone_number
+#                 }
+#                 send_otp_email(email_id, otp)
+#                 messages.info(request, "OTP sent to your email")
+#                 return render(request, "client_index.html", {"form": form})
+
+#             session_otp = request.session.get("otp")
+
+#             if otp_entered == session_otp:
+#                 data = request.session.get("user_data")
+
+#                 employee = Employee(
+#                     name      = data["name"],
+#                     email_id  = data["email_id"],
+#                     mobile_no = data["mobile_no"],
+#                     client    = request.tenant
+#                 )
+#                 employee.set_password(data["password"])
+#                 employee.save()
+
+#                 # Only flush OTP-related keys, not the full login session
+#                 request.session.pop('otp', None)
+#                 request.session.pop('user_data', None)
+
+#                 messages.success(request, "Employee added successfully!")
+#                 return redirect("client_index")
+
+#             else:
+#                 messages.error(request, "Invalid OTP")
+
+#     else:
+#         form = EmployeeForm()
+
+#     employees = Employee.objects.all()
+#     return render(request, "client_index.html", {
+#         "form": form,
+#         "employees": employees
+#     })
+#=====================================================================================================> UPDATED CODE
     
     
     

@@ -1,13 +1,14 @@
 from django.urls import path, include
 from django.contrib import admin
-from .views import index, create_employee, tenant_log_in, index_page, tenant_log_out
+from .views import index, create_employee, tenant_log_in, index_page, tenant_log_out, send_otp
 
 urlpatterns = [
     path('', tenant_log_in, name="tenant_login"),
     path('logout', tenant_log_out, name="tenant_logout"),
     path('client_dashboard', index_page, name="client_dashboard"),
     path('employee_add', index, name="client_index"),
-    path('create_employee', create_employee, name="create_employee")
+    path('create_employee', create_employee, name="create_employee"),
+    path('send_otp', send_otp, name='send_otp')
 ]
 
 

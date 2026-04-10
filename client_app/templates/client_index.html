@@ -25,7 +25,7 @@
         {% endfor %}
     {% endif %}
 
-    <form method="POST" action="{% url 'create_employee' %}">
+    <!-- <form method="POST" action="{% url 'create_employee' %}">
         {% csrf_token %}
         <p>{{ form.name.label_tag }} {{ form.name }}</p>
         <p>{{ form.password.label_tag }} {{ form.password }}</p>
@@ -39,7 +39,27 @@
         </div>
         <br>
         <button type="submit">Submit</button>
+    </form> -->
+
+        
+    <form method="POST" action="{% url 'create_employee' %}" id="employeeForm">
+        {% csrf_token %}
+
+        <p>{{ form.name.label_tag }} {{ form.name }}</p>
+        <p>{{ form.password.label_tag }} {{ form.password }}</p>
+        <p>{{ form.email_id.label_tag }} {{ form.email_id }}</p>
+        <p>{{ form.mobile_no.label_tag }} {{ form.mobile_no }}</p>
+
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <div>{{ form.otp.label_tag }} {{ form.otp }}</div>
+            <button type="button" id="sendOtpBtn" onclick="sendOTP()">Send OTP</button>
+            <span id="otpStatus" style="font-size: 0.9em;"></span>
+        </div>
+
+        <br>
+        <button type="submit">Submit</button>
     </form>
+
 
     <br><br><br>
     {% if employees %}
@@ -62,5 +82,68 @@
         </tbody>
     </table>
     {% endif %}
+
+<script>
+    let countdownInterval = null;
+
+    function sendOTP() {
+        const form = document.getElementById("employeeForm");
+        const statusEl = document.getElementById("otpStatus");
+        const sendBtn = document.getElementById("sendOtpBtn");
+
+        const payload = new FormData();
+        payload.append("csrfmiddlewaretoken", form.querySelector("[name=csrfmiddlewaretoken]").value);
+        payload.append("name",      form.querySelector("[name=name]").value);
+        payload.append("password",  form.querySelector("[name=password]").value);
+        payload.append("email_id",  form.querySelector("[name=email_id]").value);
+        payload.append("mobile_no", form.querySelector("[name=mobile_no]").value);
+
+        sendBtn.disabled = true;
+        statusEl.style.color = "gray";
+        statusEl.textContent = "Sending…";
+
+        fetch("{% url 'send_otp' %}", { method: "POST", body: payload })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    statusEl.style.color = "green";
+                    statusEl.textContent = data.message;
+                    startCountdown(data.expiry);
+                } else {
+                    statusEl.style.color = "red";
+                    statusEl.textContent = data.error;
+                    sendBtn.disabled = false;
+                }
+            })
+            .catch(() => {
+                statusEl.style.color = "red";
+                statusEl.textContent = "Something went wrong. Try again.";
+                sendBtn.disabled = false;
+            });
+    }
+
+    function startCountdown(seconds) {
+        clearInterval(countdownInterval);
+        const statusEl = document.getElementById("otpStatus");
+        const sendBtn  = document.getElementById("sendOtpBtn");
+
+        countdownInterval = setInterval(function () {
+            if (seconds <= 0) {
+                clearInterval(countdownInterval);
+                statusEl.style.color = "red";
+                statusEl.textContent = "OTP expired. Request a new one.";
+                sendBtn.disabled = false;
+                sendBtn.textContent = "Resend OTP";
+                return;
+            }
+            const m = Math.floor(seconds / 60);
+            const s = String(seconds % 60).padStart(2, "0");
+            statusEl.style.color = seconds <= 15 ? "orange" : "gray";
+            statusEl.textContent = "OTP expires in " + m + ":" + s;
+            seconds--;
+        }, 1000);
+    }
+</script>
+
 </body>
 </html>
