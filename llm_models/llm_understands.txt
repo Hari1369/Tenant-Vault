@@ -1,0 +1,11 @@
+<|system|>   → We set the RULES for LLM
+               "You are an HR assistant, be professional..."
+
+<|user|>     → What we NEED from LLM
+               "Show me John's email"
+
+<|assistant|>→ REPLY we GET from LLM
+               "John's email is john@company.com"
+
+</s>         → END of that message
+               (like a full stop)

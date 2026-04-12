@@ -25,4 +25,6 @@ urlpatterns = [
 
     # TENANT (client app)
     path('', include("client_app.urls")),
+    
+    path("llm/", include("llm_agent.urls")),
 ]
