@@ -6,6 +6,7 @@ def get_all_clients():
     clients = Client.objects.exclude(schema_name="public").values(
         "id", "name", "schema_name"
     )
+    print("CLIENTS : ", clients)
     return list(clients)
 
 
